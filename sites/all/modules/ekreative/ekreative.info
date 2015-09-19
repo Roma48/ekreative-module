@@ -1,0 +1,6 @@
+name = ekreative
+description = A new content type
+package = Custom node Type
+core = 7.x
+files[] = ekreative.module
+files[] = ekreative.tpl.php

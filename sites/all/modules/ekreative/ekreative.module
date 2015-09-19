@@ -1,0 +1,89 @@
+<?php
+
+function ekreative_menu() {
+    $items['ekreative'] = array(
+        'title' => 'eKreative page',
+        'page callback'    => 'ekreative_page',
+        'access callback' => TRUE,
+    );
+    $items['ekreative/user'] = array(
+        'title' => 'eKreative user',
+        'page callback'    => 'ekreative_user',
+        'access callback' => TRUE,
+    );
+    $items['ekreative/user/calendar'] = array(
+        'title' => 'User Calendar',
+        'page callback'    => 'user_calendar',
+        'access callback' => TRUE,
+    );
+    return $items;
+}
+
+function ekreative_page(){
+    drupal_add_css(drupal_get_path('module', 'ekreative') . '/style.css', 'module');
+    $events = db_select( 'users', 'u' );
+    $events->fields( 'u' , array( 'uid', 'name' ) );
+    $events->fields( 'rl' , array( 'name' ) );
+    $events->leftJoin('users_roles', 'r', 'r.uid = u.uid');
+    $events->leftJoin('role', 'rl', 'rl.rid = r.rid');
+    $events_post = $events->execute()->fetchAll();
+    $users = entity_load('user');
+
+    $output = theme('ekreative', array('users' => $users));
+
+    return $output;
+}
+
+function ekreative_user(){
+    drupal_add_js(drupal_get_path('module', 'ekreative') . '/fullcalendar.min.js');
+    drupal_add_css(drupal_get_path('module', 'ekreative') . '/fullcalendar.css', 'module');
+
+    $user = entity_load('user', array($_GET['id']));
+    $output = theme('ekreative-user', array('user' => $user));
+
+    return $output;
+}
+
+function user_calendar(){
+    $user = entity_load('user', array($_GET['id']));
+    $query = db_select('field_data_field_developer_s_','n');
+    $query->fields('n',array('entity_id'));
+    $query->condition('n.field_developer_s__uid', $user[$_GET['id']]->uid);
+    $entity_id = $query->execute()->fetchAll();
+//                    echo '<pre>';
+//                    var_dump($entity_id);
+//                    echo '</pre>';
+//                    exit;
+    $project = array();
+    $res_list = array();
+    foreach ($entity_id as $id){
+        $rand = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
+        $color = '#'.$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)];
+        $project = node_load($id->entity_id);
+        $res_list[] = array(
+            'title' => $project->title,
+            'start' => date('d M Y', strtotime($project->field_start_date_project['und'][0]['value'])),
+            'end' => date('d M Y', strtotime($project->field_end_date['und'][0]['value'])),
+            'color' => $color
+        );
+    }
+    drupal_add_http_header('Content-type',"application/json");
+    print drupal_json_encode($res_list);
+
+    module_invoke_all('exit');
+    exit;
+}
+
+function ekreative_theme() {
+    return array(
+        'ekreative' => array(
+            'template'  =>  'ekreative',
+            'variables' =>  ''
+        ),
+        'ekreative-user' => array(
+            'template'  =>  'ekreative-user',
+            'variables' =>  ''
+        )
+
+    );
+}

@@ -40,3 +40,25 @@
     margin: 0;
     font-weight: bold;
 }
+
+.nav.nav-tabs {
+    padding: 0;
+}
+
+.user-full h1 {
+    float: left;
+    width: 85%;
+}
+
+.user-full .photo-user {
+    float: right;
+    margin: 0;
+}
+
+.user-full section h2 {
+    font-weight: bold;
+}
+
+table tr th {
+    background: #efa720 !important;
+}

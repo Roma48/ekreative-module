@@ -2,18 +2,33 @@
 
 function ekreative_menu() {
     $items['ekreative'] = array(
-        'title' => 'eKreative page',
+        'title' => 'Team',
         'page callback'    => 'ekreative_page',
         'access callback' => TRUE,
     );
     $items['ekreative/user'] = array(
-        'title' => 'eKreative user',
+        'title' => 'User',
         'page callback'    => 'ekreative_user',
+        'access callback' => TRUE,
+    );
+    $items['projects'] = array(
+        'title' => 'Projects',
+        'page callback'    => 'ekreative_projects',
+        'access callback' => TRUE,
+    );
+    $items['project'] = array(
+        'title' => 'Project',
+        'page callback'    => 'ekreative_project',
         'access callback' => TRUE,
     );
     $items['ekreative/user/calendar'] = array(
         'title' => 'User Calendar',
         'page callback'    => 'user_calendar',
+        'access callback' => TRUE,
+    );
+    $items['ekreative/projects/calendar'] = array(
+        'title' => 'Projects Calendar',
+        'page callback'    => 'projects_calendar',
         'access callback' => TRUE,
     );
     return $items;
@@ -34,7 +49,28 @@ function ekreative_page(){
     return $output;
 }
 
+function ekreative_projects(){
+    drupal_add_css(drupal_get_path('module', 'ekreative') . '/style.css', 'module');
+    drupal_add_js(drupal_get_path('module', 'ekreative') . '/fullcalendar.min.js');
+    drupal_add_css(drupal_get_path('module', 'ekreative') . '/fullcalendar.css', 'module');
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+        ->propertyCondition('status', 1) /* Status to make sure it is published */
+        ->propertyCondition('type', array('projects')) /* get pages and webforms */
+        ->range(0, 9999); /* amount of pages to get */
+    $result = $query->execute();
+    $projects = node_load_multiple(array_keys($result['node']));
+
+    $output = theme('ekreative-projects', array('projects' => $projects));
+//    echo "<pre>";
+//    var_dump($projects);
+//    echo "</pre>";
+//    exit;
+    return $output;
+}
+
 function ekreative_user(){
+    drupal_add_css(drupal_get_path('module', 'ekreative') . '/style.css', 'module');
     drupal_add_js(drupal_get_path('module', 'ekreative') . '/fullcalendar.min.js');
     drupal_add_css(drupal_get_path('module', 'ekreative') . '/fullcalendar.css', 'module');
 
@@ -42,6 +78,38 @@ function ekreative_user(){
     $output = theme('ekreative-user', array('user' => $user));
 
     return $output;
+}
+
+function projects_calendar(){
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+        ->propertyCondition('status', 1) /* Status to make sure it is published */
+        ->propertyCondition('type', array('projects')) /* get pages and webforms */
+        ->range(0, 9999); /* amount of pages to get */
+    $result = $query->execute();
+    $projects = node_load_multiple(array_keys($result['node']));
+//                    echo '<pre>';
+//                    var_dump($projects);
+//                    echo '</pre>';
+//                    exit;
+    $project = array();
+    $res_list = array();
+    foreach ($projects as $id){
+        $rand = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
+        $color = '#'.$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)];
+        $project = node_load($id->nid);
+        $res_list[] = array(
+            'title' => $project->title,
+            'start' => date('d M Y', strtotime($project->field_start_date_project['und'][0]['value'])),
+            'end' => date('d M Y', strtotime($project->field_end_date['und'][0]['value'])),
+            'color' => $color
+        );
+    }
+    drupal_add_http_header('Content-type',"application/json");
+    print drupal_json_encode($res_list);
+
+    module_invoke_all('exit');
+    exit;
 }
 
 function user_calendar(){
@@ -82,6 +150,10 @@ function ekreative_theme() {
         ),
         'ekreative-user' => array(
             'template'  =>  'ekreative-user',
+            'variables' =>  ''
+        ),
+        'ekreative-projects' => array(
+            'template'  =>  'ekreative-projects',
             'variables' =>  ''
         )
 

@@ -54,7 +54,7 @@ samp,
 var {
   padding: 0 0.4em;
   font-size: 0.857em;
-  font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", "Nimbus Mono L", "DejaVu Sans Mono", monospace, "Courier New";
+  font-family: 'Open Sans', Arial, sans-serif;
 }
 code {
   background-color: #f2f2f2;
@@ -106,7 +106,7 @@ body,
 #site-slogan,
 .ui-widget,
 .comment-form label {
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: 'Open Sans', Arial, sans-serif;
 }
 #header,
 #footer-wrapper,
@@ -121,13 +121,13 @@ div.meta,
 p.comment-time,
 table,
 .breadcrumb {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans', Arial, sans-serif;
 }
 input,
 textarea,
 select,
 a.button {
-  font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
+  font-family:'Open Sans', Arial, sans-serif;
 }
 
 /* ------------------ Reset Styles ------------------ */
@@ -457,12 +457,14 @@ h1#site-name {
 /* --------------- Main Menu ------------ */
 
 #main-menu {
-  clear: both;
+  /*clear: both;*/
+  padding-top: 70px;
 }
 #main-menu-links {
   font-size: 0.929em;
   margin: 0;
   padding: 0 15px;
+  float: right;
 }
 #main-menu-links li {
   float: left; /* LTR */
@@ -1638,4 +1640,8 @@ div.admin-panel .description {
 }
 #footer-wrapper .poll .bar .foreground {
   background-color: #ddd;
+}
+
+#header {
+  height: 100px;
 }

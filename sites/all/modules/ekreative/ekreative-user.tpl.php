@@ -171,7 +171,6 @@
             <div id="calendar"></div>
             <script>
                 (function($){
-
                     $('#calendar').fullCalendar({
                         firstDay : 1,
                         header: {left: 'prev,next today',center: 'title',right: 'month,agendaWeek,agendaDay'},

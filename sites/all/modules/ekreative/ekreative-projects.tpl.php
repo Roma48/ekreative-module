@@ -5,7 +5,116 @@
 
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="home">
-        <?php foreach($projects as $project):?>
+        <form class="form-horizontal" style="margin-bottom: 50px; background: #cccccc; padding: 20px" method="post">
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputEmail3" name="name" placeholder="Name">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">Search</button>
+                </div>
+            </div>
+        </form>
+        <?php
+        if(isset($_POST['name'])){
+            $query = db_select('node','n');
+            $query->fields('n', array('nid'));
+            $query->condition('n.title', '%'.$_POST['name'].'%', 'LIKE');
+            $projects = $query->execute()->fetchAll();
+
+            foreach($projects as $nid){
+                $project = node_load($nid->nid);?>
+                <h1><?php print $project->title; ?></h1>
+                <table class="table">
+                    <thead>
+                    <th>
+                        Developers
+                    </th>
+                    <th>
+                        Manager
+                    </th>
+                    <th>
+                        Designer
+                    </th>
+                    <th>
+                        Tester
+                    </th>
+                    <th>
+                        Start Date
+                    </th>
+                    <th>
+                        End Date
+                    </th>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <?php
+                            foreach ($project->field_developer_s_['und'][0] as $uid){
+                                $query = db_select('users','n');
+                                $query->fields('n',array('name'));
+                                $query->condition('n.uid', $uid);
+                                $user_id = $query->execute()->fetchAll();
+                                foreach ($user_id as $dev) {
+                                    print $dev->name;
+                                }
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                            foreach ($project->field_manager_project['und'][0] as $uid){
+                                $query = db_select('users','n');
+                                $query->fields('n',array('name'));
+                                $query->condition('n.uid', $uid);
+                                $user_id = $query->execute()->fetchAll();
+                                foreach ($user_id as $dev) {
+                                    print $dev->name;
+                                }
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                            foreach ($project->field_designer['und'][0] as $uid){
+                                $query = db_select('users','n');
+                                $query->fields('n',array('name'));
+                                $query->condition('n.uid', $uid);
+                                $user_id = $query->execute()->fetchAll();
+                                foreach ($user_id as $dev) {
+                                    print $dev->name;
+                                }
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                            foreach ($project->field_qa_project['und'][0] as $uid){
+                                $query = db_select('users','n');
+                                $query->fields('n',array('name'));
+                                $query->condition('n.uid', $uid);
+                                $user_id = $query->execute()->fetchAll();
+                                foreach ($user_id as $dev) {
+                                    print $dev->name;
+                                }
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <?php print date('d M Y', strtotime($project->field_start_date_project['und'][0]['value'])); ?>
+                        </td>
+                        <td>
+                            <?php print date('d M Y',strtotime($project->field_end_date['und'][0]['value'])); ?>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            <?php }
+        } else {
+        foreach($projects as $project):?>
             <!--    --><?php //echo "<pre>"; ?>
             <!--    --><?php //var_dump($project); ?>
             <!--    --><?php //echo "</pre>"; ?>
@@ -94,7 +203,7 @@
                 </tr>
                 </tbody>
             </table>
-        <?php endforeach; ?>
+        <?php endforeach; }?>
     </div>
     <div role="tabpanel" class="tab-pane" id="profile">
         <div id="calendar"></div>

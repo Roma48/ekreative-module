@@ -107,14 +107,11 @@
                             </td>
                             <td>
                                 <?php
-                                $query = db_select('field_revision_field_technology','n');
-                                $query->fields('s',array('name'));
-                                $query->leftJoin('taxonomy_term_data','s','s.tid = n.field_technology_tid');
+                                $query = db_select('field_data_field_skills','n');
+                                $query->fields('n',array('field_skills_value'));
                                 $query->condition('n.entity_id', $user[$_GET['id']]->uid);
                                 $res = $query->execute()->fetchAll();
-                                foreach ($res as $skill){
-                                    print "<span>".$skill->name.", </span>";
-                                }
+                                print "<span>".$res[0]->field_skills_value."</span>";
                                 ?>
                             </td>
                             <td>
